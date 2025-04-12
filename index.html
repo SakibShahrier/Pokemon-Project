@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/7150fbc846.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    
+    <div id="app">
+        <div>
+            <h1>Pokemon Profile</h1>
+
+            <div class="container">
+                <div class="poke-list">
+                    <h3>List of Pokemon:</h3>
+                    <ul>
+                        <li v-for="p in pokemons" v-on:click="infoSetter(p.name.english)">{{ p.name.english }}</li>
+                    </ul>
+                </div>
+
+                <div v-show="!viewProf">
+                    <p>Please Select a Pokemon</p>
+                </div>
+    
+                <div class="poke-prof" v-show="viewProf">
+                    <h2>{{ pokemonName }}</h2>
+                    <img :src="imgUrl">
+                    <div class="poke-type">
+                        <h4>Pokemon Type:</h4>
+                        <span v-for="t in type">{{ t }}</span>
+                    </div>
+                    <div class="description">
+                        <span>Description: </span>
+                        <p>{{ desc }}</p>
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        const app = Vue.createApp(
+            {
+                data(){
+                    return {
+                        pokemons: [],
+                        type: null,
+                        pokemonName: null,
+                        imgUrl: null,
+                        desc: null,
+                        viewProf: false
+                    };
+                },
+                mounted(){
+                    fetch('pokemon.json')
+                        .then(res => res.json())
+                        .then(data =>{
+                            this.pokemons = data;
+                        })
+                },
+                methods:{
+                    infoSetter(name){
+
+                        const pokemonFound = this.pokemons.filter(p =>{
+                            let x = p.name.english
+                            return x === name;
+                        })
+
+                        this.pokemonName = pokemonFound[0].name.english;
+
+                        this.imgUrl = pokemonFound[0].image.hires;
+
+                        this.type = pokemonFound[0].type;
+
+                        this.desc = pokemonFound[0].description;
+
+                        this.viewProf = true;
+                    }
+                }
+            }
+
+        )
+
+        app.mount('#app');
+        
+    </script>
+</body>
+</html>
